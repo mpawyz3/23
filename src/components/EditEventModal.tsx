@@ -341,14 +341,7 @@ export default function EditEventModal({
           onClick={handleSubmit}
           className="flex-1 px-6 py-3 bg-gradient-to-r from-rose-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-rose-500/50 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
         >
-          {isLoading ? (
-            <>
-              <Loader className="w-5 h-5 animate-spin" />
-              <span>Saving...</span>
-            </>
-          ) : (
-            <span>Save Changes</span>
-          )}
+          <span>Save Changes</span>
         </button>
       </div>
     </div>

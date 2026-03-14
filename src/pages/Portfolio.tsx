@@ -728,12 +728,7 @@ export default function Portfolio() {
                   : 'bg-gradient-to-r from-rose-500 to-purple-600 hover:shadow-xl text-white'
               }`}
             >
-              {isSaving ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : isEditing ? (
+              {isEditing ? (
                 <>
                   <Save className="w-4 h-4" />
                   Save Changes
@@ -1578,10 +1573,9 @@ function AddItemModal({ title, fields, onSave, onClose }: any) {
             </button>
             <button
               type="submit"
-              disabled={isSaving}
               className="flex-1 px-4 py-2 bg-gradient-to-r from-rose-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              Save
             </button>
           </div>
         </form>

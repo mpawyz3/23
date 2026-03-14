@@ -117,6 +117,29 @@ export default function Contracts() {
     return (paid / milestones.length) * 100;
   };
 
+  // Show photo upload form FIRST - don't block with loading spinner
+  if (showPhotoUpload && selectedMilestone && contractorId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => setShowPhotoUpload(false)}
+            className="mb-6 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition"
+          >
+            ← Back
+          </button>
+          <PhotoLockUploadForm
+            milestoneId={selectedMilestone.id}
+            contractorId={contractorId}
+            onSuccess={() => {
+              // Keep the form open after successful upload - don't refetch
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
@@ -315,28 +338,6 @@ export default function Contracts() {
             onSuccess={() => {
               setShowMilestoneForm(false);
               fetchContractorAndContracts();
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (showPhotoUpload && selectedMilestone && contractorId) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <button
-            onClick={() => setShowPhotoUpload(false)}
-            className="mb-6 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition"
-          >
-            ← Back
-          </button>
-          <PhotoLockUploadForm
-            milestoneId={selectedMilestone.id}
-            contractorId={contractorId}
-            onSuccess={() => {
-              // Keep the form open after successful upload - don't refetch
             }}
           />
         </div>

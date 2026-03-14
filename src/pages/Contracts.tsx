@@ -336,8 +336,7 @@ export default function Contracts() {
             milestoneId={selectedMilestone.id}
             contractorId={contractorId}
             onSuccess={() => {
-              setShowPhotoUpload(false);
-              fetchContractorAndContracts();
+              // Keep the form open after successful upload - don't refetch
             }}
           />
         </div>

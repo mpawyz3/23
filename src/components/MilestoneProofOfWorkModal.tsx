@@ -98,6 +98,37 @@ export default function MilestoneProofOfWorkModal({
     if (file) handleFileSelect(file);
   };
 
+  const updateMilestoneAndCheckCompletion = async (mId: string, cId: string) => {
+    // Update milestone status to 'completed'
+    const { error: updateError } = await supabase
+      .from('contract_milestones')
+      .update({ status: 'completed' })
+      .eq('id', mId);
+
+    if (updateError) {
+      console.error('Warning: Failed to update milestone status:', updateError);
+      return; // Don't throw - the upload succeeded even if status update failed
+    }
+
+    // Check if all milestones are now completed
+    const { data: allMilestones, error: checkError } = await supabase
+      .from('contract_milestones')
+      .select('id, status')
+      .eq('contract_id', cId);
+
+    if (!checkError && allMilestones && allMilestones.every(m => m.status === 'completed')) {
+      // All milestones completed - mark contract as completed
+      const { error: contractError } = await supabase
+        .from('contracts')
+        .update({ status: 'completed' })
+        .eq('id', cId);
+
+      if (contractError) {
+        console.error('Warning: Failed to mark contract as completed:', contractError);
+      }
+    }
+  };
+
   const handleUploadVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile || !description.trim()) {
@@ -165,6 +196,9 @@ export default function MilestoneProofOfWorkModal({
 
       if (insertError) throw insertError;
 
+      // Update milestone status and check if contract is complete
+      await updateMilestoneAndCheckCompletion(milestoneId, contractId);
+
       setDescription('');
       resetState();
       setSelectedFile(null);
@@ -212,6 +246,9 @@ export default function MilestoneProofOfWorkModal({
 
       if (insertError) throw insertError;
 
+      // Update milestone status and check if contract is complete
+      await updateMilestoneAndCheckCompletion(milestoneId, contractId);
+
       setDescription('');
       setSelectedFile(null);
       onSuccess();
@@ -255,6 +292,9 @@ export default function MilestoneProofOfWorkModal({
         ]);
 
       if (insertError) throw insertError;
+
+      // Update milestone status and check if contract is complete
+      await updateMilestoneAndCheckCompletion(milestoneId, contractId);
 
       setDescription('');
       setSelectedFile(null);
@@ -505,11 +545,11 @@ export default function MilestoneProofOfWorkModal({
 
               <button
                 onClick={handleSavePhoto}
-                disabled={!selectedFile || !description.trim()}
+                disabled={!selectedFile || !description.trim() || isSaving}
                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Upload Photo & Complete Milestone
+                {isSaving ? 'Uploading...' : 'Upload Photo & Complete Milestone'}
               </button>
             </>
           )}
@@ -563,11 +603,11 @@ export default function MilestoneProofOfWorkModal({
 
               <button
                 onClick={handleSaveDocument}
-                disabled={!selectedFile || !description.trim()}
+                disabled={!selectedFile || !description.trim() || isSaving}
                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Upload Document & Complete Milestone
+                {isSaving ? 'Uploading...' : 'Upload Document & Complete Milestone'}
               </button>
             </>
           )}

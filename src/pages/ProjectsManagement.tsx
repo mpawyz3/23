@@ -11,7 +11,7 @@ import MilestoneProofOfWorkModal from '../components/MilestoneProofOfWorkModal';
 
 export default function ProjectsManagement() {
   const { user } = useAuth();
-  const { completedProjects, ongoingProjects, loading, error } = useProjectsManagement(user?.id || '');
+  const { completedProjects, ongoingProjects, loading, error, refetch } = useProjectsManagement(user?.id || '');
   const [activeTab, setActiveTab] = useState<'ongoing' | 'completed'>('ongoing');
   const [selectedProject, setSelectedProject] = useState<OngoingProject | CompletedProject | null>(null);
   const [showMilestoneDetails, setShowMilestoneDetails] = useState(false);
@@ -406,8 +406,11 @@ export default function ProjectsManagement() {
             milestoneName={selectedMilestoneForProof.milestoneName}
             userId={user?.id || ''}
             userName={user?.name || 'User'}
-            onSuccess={() => {
+            onSuccess={async () => {
               setShowProofOfWorkModal(false);
+              setSelectedMilestoneForProof(null);
+              // Refresh the projects data after successful upload
+              await refetch();
             }}
             onClose={() => {
               setShowProofOfWorkModal(false);

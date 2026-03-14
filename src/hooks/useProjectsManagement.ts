@@ -87,18 +87,41 @@ export function useProjectsManagement(userId: string) {
 
       if (contractsError) throw contractsError;
 
-      const projects = contractsData?.map(contract => ({
-        id: contract.id,
-        contract_number: contract.contract_number,
-        client_name: contract.client_name,
-        contract_amount: contract.contract_amount,
-        currency_code: contract.currency_code,
-        contract_start_date: contract.contract_start_date,
-        contract_end_date: contract.contract_end_date,
-        status: contract.status,
-        milestones: contract.contract_milestones || [],
-        progress_percentage: calculateProgress(contract.contract_milestones || []),
-      })) || [];
+      // Fetch project_milestone_videos for each milestone
+      const projects = await Promise.all(
+        contractsData?.map(async (contract) => {
+          const milestonesWithVideos = await Promise.all(
+            (contract.contract_milestones || []).map(async (milestone: any) => {
+              const { data: videos, error: videosError } = await supabase
+                .from('project_milestone_videos')
+                .select('*')
+                .eq('milestone_id', milestone.id);
+
+              if (videosError) {
+                console.error('Error fetching videos for milestone:', videosError);
+              }
+
+              return {
+                ...milestone,
+                videos: videos || [],
+              };
+            })
+          );
+
+          return {
+            id: contract.id,
+            contract_number: contract.contract_number,
+            client_name: contract.client_name,
+            contract_amount: contract.contract_amount,
+            currency_code: contract.currency_code,
+            contract_start_date: contract.contract_start_date,
+            contract_end_date: contract.contract_end_date,
+            status: contract.status,
+            milestones: milestonesWithVideos,
+            progress_percentage: calculateProgress(milestonesWithVideos),
+          };
+        }) || []
+      );
 
       setOngoingProjects(projects);
     } catch (err) {
@@ -150,7 +173,7 @@ export function useProjectsManagement(userId: string) {
   // Set up real-time subscription
   const setupRealtimeSubscription = () => {
     channel = supabase
-      .channel('contracts-changes')
+      .channel('projects-changes')
       .on(
         'postgres_changes',
         {
@@ -160,6 +183,20 @@ export function useProjectsManagement(userId: string) {
         },
         () => {
           // Refetch data when contracts change
+          fetchOngoingProjects();
+          fetchCompletedProjects();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'project_milestone_videos',
+        },
+        () => {
+          // Refetch data when milestone videos are added
+          console.log('Milestone video uploaded, refreshing projects...');
           fetchOngoingProjects();
           fetchCompletedProjects();
         }
@@ -188,7 +225,8 @@ export function useProjectsManagement(userId: string) {
 
   const calculateProgress = (milestones: any[]) => {
     if (!milestones || milestones.length === 0) return 0;
-    const completed = milestones.filter(m => m.status === 'completed').length;
+    // A milestone is considered completed if it has status 'completed' OR has uploaded videos
+    const completed = milestones.filter(m => m.status === 'completed' || (m.videos && m.videos.length > 0)).length;
     return Math.round((completed / milestones.length) * 100);
   };
 

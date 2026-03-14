@@ -375,17 +375,10 @@ export default function CompanyProfile() {
                     disabled={saving}
                     className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {saving ? (
-                      <>
-                        <Loader className="w-4 h-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        Save Changes
-                      </>
-                    )}
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </>
                   </button>
                   <button
                     type="button"

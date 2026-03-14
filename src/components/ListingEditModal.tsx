@@ -191,11 +191,10 @@ export function ListingEditModal({
           </button>
           <button
             onClick={handleSave}
-            disabled={isSaving}
-            className="flex-1 px-6 py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/50 rounded-lg font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/50 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </button>
         </div>
       </div>

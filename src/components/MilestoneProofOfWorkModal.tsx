@@ -505,7 +505,7 @@ export default function MilestoneProofOfWorkModal({
 
               <button
                 onClick={handleSavePhoto}
-                disabled={!selectedFile || !description.trim() || isSaving}
+                disabled={!selectedFile || !description.trim()}
                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />
@@ -563,7 +563,7 @@ export default function MilestoneProofOfWorkModal({
 
               <button
                 onClick={handleSaveDocument}
-                disabled={!selectedFile || !description.trim() || isSaving}
+                disabled={!selectedFile || !description.trim()}
                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />

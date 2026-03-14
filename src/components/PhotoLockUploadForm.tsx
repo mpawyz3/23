@@ -125,15 +125,6 @@ export default function PhotoLockUploadForm({ milestoneId, contractorId, onSucce
       if (insertError) throw insertError;
 
       setSuccess(true);
-      setFile(null);
-      setPreview(null);
-      setFormData({
-        task_name: '',
-        task_description: '',
-        gps_latitude: '',
-        gps_longitude: '',
-        gps_accuracy_meters: '50',
-      });
 
       if (onSuccess) {
         setTimeout(onSuccess, 1500);
@@ -303,10 +294,7 @@ export default function PhotoLockUploadForm({ milestoneId, contractorId, onSucce
           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 rounded-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
-            <>
-              <Loader className="w-4 h-4 animate-spin" />
-              Uploading & Verifying...
-            </>
+            'Uploading...'
           ) : (
             <>
               <Camera className="w-4 h-4" />
